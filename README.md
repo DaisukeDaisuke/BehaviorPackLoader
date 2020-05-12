@@ -1,6 +1,14 @@
 # BehaviorPackLoader
 
-## special
+## Special Thanks
+#### Client-side scripting support  
+https://github.com/pmmp/PocketMine-MP/pull/2871  
+(Used in debug)  
+
+## Others
+#### We had the support of several developers.  
+  
+(Thank you very much!)  
 
 ## branches
 ### master
