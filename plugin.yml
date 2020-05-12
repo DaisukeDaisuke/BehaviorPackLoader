@@ -1,6 +1,6 @@
 name: BehaviorPackLoader
 main: BehaviorPackLoader\BehaviorPackLoader
-version: 3.0
+version: 5.0
 api:
 - 1.0
 - 2.0.0
