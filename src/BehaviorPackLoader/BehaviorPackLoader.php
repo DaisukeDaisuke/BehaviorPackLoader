@@ -55,21 +55,6 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 		}
 
 		$this->saveResource("resource_packs.yml");
-		$this->saveResource("setting.yml");
-
-		$settingConfig = new Config($this->getDataFolder()."setting.yml",Config::YAML);
-		$no_vendor = $settingConfig->get("no-vendor");
-        if(!$no_vendor&&!file_exists($this->getFile()."vendor/autoload.php")){
-            $this->getLogger()->error($this->getFile()."vendor/autoload.php ファイルに関しましては存在致しません為、BehaviorPackLoaderを起動することは出来ません。");
-            $this->getLogger()->info("§ehttps://github.com/DaisukeDaisuke/BehaviorPackLoader/releases よりphar形式のプラグインをダウンロードお願い致します。§r");
-            $this->getLogger()->info("§cこのプラグインを無効化致します。§r");
-            $this->getServer()->getPluginManager()->disablePlugin($this);
-            return;
-        }
-
-        if(!$no_vendor){
-			include_once $this->getFile()."vendor/autoload.php";
-		}
 
 		$this->resourcePackManager = new ResourcePackManager($this->getDataFolder(),$this->getLogger());
 		$resourcePacksConfig = new Config($this->getDataFolder() . "resource_packs.yml", Config::YAML, []);
