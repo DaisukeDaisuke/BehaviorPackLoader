@@ -48,8 +48,6 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 	
 	public $item_id_map_array;
 
-	public $nowRuntimeId;
-
 	public function onEnable(){
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 		if(!file_exists($this->getDataFolder())){
