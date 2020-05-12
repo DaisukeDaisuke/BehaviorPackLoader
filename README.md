@@ -12,9 +12,9 @@ https://github.com/pmmp/PocketMine-MP/pull/2871
 
 ## branches
 ### master
-TargThanketAPI: 3.0.0  
+Target API: 3.0.0  
 ### for4.0.0
-TargetAPI: 4.0.0  
+Target API: 4.0.0  
 ### for4.0.0_BlockTest
-TargetAPI: 4.0.0  
+Target API: 4.0.0  
 for4.0.0_BlockTest branch is unstable.
