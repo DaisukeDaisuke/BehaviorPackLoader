@@ -2,90 +2,25 @@
 
 namespace BehaviorPackLoader;
 
+use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
+
 use pocketmine\plugin\PluginBase;
-use pocketmine\entity\Entity;
-use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\event\Listener;
-use pocketmine\event\server\DataPacketReceiveEvent;
-use pocketmine\event\server\DataPacketSendEvent;
-use pocketmine\network\mcpe\protocol\LoginPacket;
-use pocketmine\network\protocol\UseItemPacket;
-use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\event\player\PlayerInteractEvent;
-use pocketmine\level\Level;
-use pocketmine\math\Vector3;
-use pocketmine\level\particle\RedstoneParticle;
-use pocketmine\level\particle\LargeExplodeParticle;
+
 use pocketmine\utils\Config;
-use pocketmine\level\particle\PortalParticle;
-use pocketmine\level\particle\DestroyBlockParticle;
-use pocketmine\level\particle\DustParticle;
-use pocketmine\level\sound\ExplodeSound;
-use pocketmine\block\Block;
-use pocketmine\level\Position;
-use pocketmine\level\Explosion;
-use pocketmine\entity\Effect;
-use pocketmine\nbt\NBT;
 use pocketmine\item\Item;
-use pocketmine\entity\Item as itementity;
-use pocketmine\event\player\PlayerKickEvent;
-use pocketmine\event\player\PlayerMoveEvent;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ShortTag;
-use pocketmine\nbt\tag\ByteTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ByteArrayTag;
-use pocketmine\entity\PigZombie;
-
-use pocketmine\event\player\PlayerItemHeldEvent;
-use pocketmine\event\player\PlayerDropItemEvent;
-use pocketmine\event\entity\EntityDeathEvent;
-use pocketmine\event\player\PlayerToggleFlightEvent;
-use pocketmine\event\block\BlockBreakEvent;
-
-use pocketmine\scheduler\Task;
-
-use pocketmine\entity\Attribute;
-
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\network\mcpe\protocol\BossEventPacket;
-use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
-use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
-use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
-use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\TransferPacket;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\network\mcpe\protocol\MovePlayerPacket;
-use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
-use pocketmine\network\mcpe\protocol\PlayerActionPacket;
-use pocketmine\network\mcpe\protocol\InteractPacket;
-use pocketmine\network\mcpe\protocol\PlayerInputPacket;
-use pocketmine\network\mcpe\protocol\SetEntityLinkPacket;
-
-use pocketmine\level\particle\HugeExplodeSeedParticle;
-use pocketmine\event\player\PlayerLoginEvent;
-use pocketmine\event\player\PlayerJoinEvent;
-use pocketmine\event\player\PlayerQuitEvent;
-
-use pocketmine\tile\Tile;
-use pocketmine\tile\Sign;
-
-use pocketmine\block\BlockFactory;
 use pocketmine\item\ItemFactory;
 
 use pocketmine\network\mcpe\protocol\ScriptCustomEventPacket;
 
+use pocketmine\event\server\DataPacketReceiveEvent;
+use pocketmine\event\server\DataPacketSendEvent;
+
 use pocketmine\network\mcpe\protocol\StartGamePacket;
-use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
+
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
 
@@ -96,12 +31,6 @@ use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackDataInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
-
-use pocketmine\network\mcpe\protocol\PacketPool;
-use pocketmine\network\mcpe\protocol\BatchPacket;
-
-use BehaviorPackLoader\lib\Revelation;
-
 
 /*
 	special Thanks!
@@ -130,6 +59,7 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 
 		$this->saveResource("setting.yml");
+		$settingConfig = new Config($this->getDataFolder()."setting.yml",Config::YAML);
 		$no_vendor = $settingConfig->get("no-vendor");
         if(!$no_vendor&&!file_exists($this->getFile()."vendor/autoload.php")){
             $this->getLogger()->error($this->getFile()."vendor/autoload.php ファイルに関しましては存在致しません為、BehaviorPackLoaderを起動することは出来ません。");
@@ -140,7 +70,7 @@ class BehaviorPackLoader extends PluginBase implements Listener{
         }
 
         if(!$no_vendor){
-			include_once $this->file."vendor/autoload.php";
+			include_once $this->getFile()."vendor/autoload.php";
 		}
 
 		if(!file_exists($this->getDataFolder())){
@@ -181,7 +111,7 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 	}
 
 	public function update_item_id_map(){
-		$reveal = $this->reveal(StartGamePacket::class);
+		$reveal = reveal(StartGamePacket::class);
 
 		$itemTable = json_decode(file_get_contents($this->getServer()->getResourcePath() . '/vanilla/item_id_map.json'), true);
 		$itemTable += $this->item_id_map_array;
