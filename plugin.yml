@@ -1,0 +1,6 @@
+name: plugin-name
+description: This is a template for developing PocketMine-MP plugin in VS Code.
+version: 0.0.1
+author: Your Name
+main: author\pluginName\Main
+api: 3.x.x

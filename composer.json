@@ -1,0 +1,21 @@
+{
+  "name": "your-name/pocketmine-vscode",
+  "license": "WTFPL",
+  "description": "This is a template for developing PocketMine-MP plugin in VS Code.",
+  "authors": [
+    {
+      "name": "Your Name",
+      "email": "your@name.com"
+    }
+  ],
+  "require": {},
+  "require-dev": {
+    "pocketmine/pocketmine-mp": "3.*"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/pmmp/PocketMine-MP.git"
+    }
+  ]
+}

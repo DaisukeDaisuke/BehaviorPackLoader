@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Syntax checking of php files
+        run: find ./src -name "*.php" -type f | xargs -l -P 0 php -l -f
+      - name: Download DevTools
+        run: wget https://github.com/pmmp/DevTools/releases/download/1.14.0/DevTools.phar -O ~/DevTools.phar
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - name: Restore cache
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+      - name: Composer validate
+        run: composer validate
+      - name: Install dependencies
+        run: composer install --no-dev --prefer-dist --no-progress --no-suggest
+      - name: Build source code
+        run: php -dphar.readonly=0 ~/DevTools.phar --make ./ --out ./out.phar
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: PHAR
+          path: ./out.phar

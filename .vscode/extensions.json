@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "MehediDracula.php-namespace-resolver",
+    "bmewburn.vscode-intelephense-client",
+    "felixfbecker.php-intellisense",
+    "neilbrayfield.php-docblocker",
+    "ikappas.composer"
+  ]
+}
