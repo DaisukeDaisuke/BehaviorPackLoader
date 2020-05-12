@@ -4,46 +4,39 @@ namespace BehaviorPackLoader;
 
 use pocketmine\Player;
 use pocketmine\Server;
-use pocketmine\command\Command;
-use pocketmine\command\CommandSender;
-
-use pocketmine\plugin\PluginBase;
-use pocketmine\event\Listener;
-
-use pocketmine\utils\Config;
 use pocketmine\item\Item;
+use pocketmine\utils\Config;
+use pocketmine\event\Listener;
 use pocketmine\item\ItemFactory;
+use pocketmine\plugin\PluginBase;
+use pocketmine\resourcepacks\ResourcePack;
 
-use pocketmine\network\mcpe\protocol\ScriptCustomEventPacket;
-
-use pocketmine\event\server\DataPacketReceiveEvent;
+use pocketmine\inventory\CreativeInventory;
 use pocketmine\event\server\DataPacketSendEvent;
 
-use pocketmine\network\mcpe\protocol\StartGamePacket;
-
-use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
+use pocketmine\event\server\DataPacketReceiveEvent;
 
-use pocketmine\network\mcpe\protocol\types\ResourcePackType;
-use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
-use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
-use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
-use pocketmine\network\mcpe\protocol\ResourcePackDataInfoPacket;
+use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
-
-/*
-	special Thanks!
-	https://qiita.com/KNJ/items/93eac224084da88a3882 (Japanese)
-	https://github.com/KNJ/revelation
-*/
-use function Wazly\Revelation\reveal;
+use pocketmine\network\mcpe\protocol\ScriptCustomEventPacket;
+use pocketmine\network\mcpe\protocol\ResourcePackDataInfoPacket;
+use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
+use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
+use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
+use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
+use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
+use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 
 class BehaviorPackLoader extends PluginBase implements Listener{
+	//by pocketmine\network\mcpe\handler\ResourcePacksPacketHandler
+	private const PACK_CHUNK_SIZE = 1048576; //1MB
+
 	/** @var ResourcePackManager */
-	public $ResourcePackManager = null;//behaviorPack
+	public $resourcePackManager = null;//behaviorPack
 	/** @var bool */
-	public $IsExperimentalGamePlay = false;
+	public $IsExperimentalGamePlay;
 
 	/*const ALWAYS_ACCEPTS_INPUT = 		0b00000001;
 	const RENDER_GAME_BEHIND = 		0b00000010;
@@ -55,10 +48,17 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 	
 	public $item_id_map_array;
 
+	public $nowRuntimeId;
+
 	public function onEnable(){
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
+		if(!file_exists($this->getDataFolder())){
+			mkdir($this->getDataFolder(),0774,true);
+		}
 
+		$this->saveResource("resource_packs.yml");
 		$this->saveResource("setting.yml");
+
 		$settingConfig = new Config($this->getDataFolder()."setting.yml",Config::YAML);
 		$no_vendor = $settingConfig->get("no-vendor");
         if(!$no_vendor&&!file_exists($this->getFile()."vendor/autoload.php")){
@@ -73,14 +73,9 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 			include_once $this->getFile()."vendor/autoload.php";
 		}
 
-		if(!file_exists($this->getDataFolder())){
-			mkdir($this->getDataFolder(),0774,true);
-		}
-		$this->saveResource("resource_packs.yml");
-		$this->ResourcePackManager = new ResourcePackManager($this->getDataFolder(),$this->getLogger());
+		$this->resourcePackManager = new ResourcePackManager($this->getDataFolder(),$this->getLogger());
 		$resourcePacksConfig = new Config($this->getDataFolder() . "resource_packs.yml", Config::YAML, []);
 		$this->IsExperimentalGamePlay = (bool) $resourcePacksConfig->get("ExperimentalGamePlay");
-		//var_dump((bool) $this->IsExperimentalGamePlay);
 
 		$item_id_map = new Config($this->getDataFolder() . "add_item_id_map.json", Config::JSON, [
 			"riceball:rice" => 10000,
@@ -88,50 +83,45 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 			"riceball:Grilled_riceball" => 10002,
 		]);
 
-		var_dump($item_id_map->getAll());
-
 		$this->item_id_map_array = $item_id_map->getAll();
-
-		$this->update_item_id_map();
 		$this->RegisterItems();
-		$this->addCreativeItems();
+		$this->addCreativeItems();	
 	}
 
 	public function RegisterItems(){
 		foreach($this->item_id_map_array as $string_id => $id){
-			ItemFactory::registerItem(new Item($id,0,"test"));
+			ItemFactory::getInstance()->register(new Item($id,0,"test"));
 		}
 	}
 
 	public function addCreativeItems(){
 		foreach($this->item_id_map_array as $string_id => $id){
-			Item::addCreativeItem(Item::get($id));
-			//ItemFactory::registerItem();
+			CreativeInventory::getInstance()->add(new Item($id));
 		}
 	}
 
-	public function update_item_id_map(){
-		$reveal = reveal(StartGamePacket::class);
-
-		$itemTable = json_decode(file_get_contents($this->getServer()->getResourcePath() . '/vanilla/item_id_map.json'), true);
-		$itemTable += $this->item_id_map_array;
-		$itemTable = $reveal->callStatic("serializeItemTable",$itemTable);
-
-		$reveal->setStatic("itemTableCache",$itemTable);
-	}
-
 	public function send(DataPacketSendEvent $event){
-		if($event->getPacket() instanceof ResourcePackStackPacket){
-			$packet = $event->getPacket();
-			$packet->behaviorPackStack = $this->ResourcePackManager->getResourceStack();
-			$packet->isExperimental = true;//$this->IsExperimentalGamePlay;
-		}else if($event->getPacket() instanceof ResourcePacksInfoPacket){
-			$packet = $event->getPacket();
-			$packet->behaviorPackEntries = $this->ResourcePackManager->getResourceStack();
-		}else if($event->getPacket() instanceof StartGamePacket){
-			if(!$this->IsExperimentalGamePlay) return;
-			$packet = $event->getPacket();
-			$packet->gameRules["experimentalgameplay"] = [1, true];
+		foreach($event->getPackets() as $key => $packet){
+			if($packet instanceof ResourcePackStackPacket){//
+				$stack = array_map(static function(ResourcePack $pack) : ResourcePackStackEntry{
+					return new ResourcePackStackEntry($pack->getPackId(), $pack->getPackVersion(), ""); //TODO: subpacks
+				}, $this->resourcePackManager->getResourceStack());
+
+				$packet->behaviorPackStack = $stack;
+				$packet->isExperimental = true;//$this->IsExperimentalGamePlay;
+			}else if($packet instanceof ResourcePacksInfoPacket){//
+				$resourcePackEntries = array_map(static function(ResourcePack $pack) : ResourcePackInfoEntry{
+					//TODO: more stuff
+					return new ResourcePackInfoEntry($pack->getPackId(), $pack->getPackVersion(), $pack->getPackSize(), "", "", "", false);
+				}, $this->resourcePackManager->getResourceStack());
+
+				$packet->behaviorPackEntries = $resourcePackEntries;
+			}else if($packet instanceof StartGamePacket){
+				$packet->itemTable += $this->item_id_map_array;
+
+				if(!$this->IsExperimentalGamePlay) return;
+				$packet->gameRules["experimentalgameplay"] = [1, true];
+			}
 		}
 	}
 
@@ -140,49 +130,59 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 			$packet = $event->getPacket();
 			switch($packet->status){
 				case ResourcePackClientResponsePacket::STATUS_REFUSED:
-					//
-					//var_dump("REFUSED!!");
-				break;
+					//TODO: add lang strings for this
+					//$this->session->disconnect("You must accept resource packs to join this server.", true);
+					break;
 				case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
-					$manager = $this->ResourcePackManager;
 					foreach($packet->packIds as $key => $uuid){
 						//dirty hack for mojang's dirty hack for versions
 						$splitPos = strpos($uuid, "_");
 						if($splitPos !== false){
 							$uuid = substr($uuid, 0, $splitPos);
 						}
-						$pack = $manager->getPackById($uuid);
+						$pack = $this->resourcePackManager->getPackById($uuid);
+
 						if(!($pack instanceof ResourcePack)){
-							//
+							//Client requested a resource pack but we don't have it available on the server
 							continue;
 						}
-						//var_dump("!!!!!".$uuid);
+
 						$pk = new ResourcePackDataInfoPacket();
 						$pk->packId = $pack->getPackId();
-						$pk->maxChunkSize = 1048576; //1MB
-						$pk->chunkCount = (int) ceil($pack->getPackSize() / $pk->maxChunkSize);
+						$pk->maxChunkSize = self::PACK_CHUNK_SIZE; //1MB
+						$pk->chunkCount = (int) ceil($pack->getPackSize() / self::PACK_CHUNK_SIZE);
 						$pk->compressedPackSize = $pack->getPackSize();
 						$pk->sha256 = $pack->getSha256();
 						$pk->packType = ResourcePackType::BEHAVIORS;//ResourcePackType::ADDON;// ...?
-						$event->getPlayer()->dataPacket($pk);
+						$event->getOrigin()->sendDataPacket($pk);
 						unset($event->getPacket()->packIds[$key]);
+
+						/*$this->session->sendDataPacket(ResourcePackDataInfoPacket::create(
+							$pack->getPackId(),
+							self::PACK_CHUNK_SIZE,
+							(int) ceil($pack->getPackSize() / self::PACK_CHUNK_SIZE),
+							$pack->getPackSize(),
+							$pack->getSha256()
+						));*/
 					}
-				break;
+					break;
 			}
 		}else if($event->getPacket() instanceof ResourcePackChunkRequestPacket){
 			$packet = $event->getPacket();
-			$manager = $this->ResourcePackManager;
+			$manager = $this->resourcePackManager;
 			$pack = $manager->getPackById($packet->packId);
 			if(!($pack instanceof ResourcePack)){
-				//
 				return;
 			}
+
+			$offset = $packet->chunkIndex * self::PACK_CHUNK_SIZE;
+
 			$pk = new ResourcePackChunkDataPacket();
-			$pk->packId = $pack->getPackId();
+			$pk->packId = $packet->packId;
 			$pk->chunkIndex = $packet->chunkIndex;
-			$pk->data = $pack->getPackChunk(1048576 * $packet->chunkIndex, 1048576);
-			$pk->progress = (1048576 * $packet->chunkIndex);
-			$event->getPlayer()->dataPacket($pk);
+			$pk->data = $pack->getPackChunk($offset, self::PACK_CHUNK_SIZE);//$pack->getPackChunk(1048576 * $packet->chunkIndex, 1048576);
+			$pk->progress = $offset;
+			$event->getOrigin()->sendDataPacket($pk);
 			$event->setCancelled();
 		}
 	}
