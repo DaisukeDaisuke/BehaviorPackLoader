@@ -1,0 +1,19 @@
+#This configuration file controls global resources used on your PocketMine-MP server.
+
+#「force_resources」に関しましては、pmmp本体側に存在致します、「resource_packs」に依存致します。
+# 以下の設定に関しましては、互換性の都合上存在しております...
+force_resources: false
+
+#以下の設定をオンに致しますと、 ScriptingAPIを有効化致しました状態にてログイン致します。
+#以下の設定をオンに致しますと、「試験的なゲームプレイで遊ぶ」は有効化致します為、ゲームプレイは不安定になる可能性があります。
+EnableScriptingAPI: true
+
+resource_stack:
+  #Resource packs here are applied from bottom to top. This means that resources in higher packs will override those in lower packs.
+  #Entries here must indicate the filename of the resource pack.
+  #Example
+  # - natural.zip
+  # - vanilla.zip
+   - resourcepackTest.zip
+  # - turn_based_rpg_resource_pack.mcpack
+  #If you want to force clients to use vanilla resources, you must place a vanilla resource pack in your resources folder and add it to the stack here.

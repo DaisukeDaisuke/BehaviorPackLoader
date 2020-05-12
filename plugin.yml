@@ -1,6 +1,8 @@
-name: plugin-name
-description: This is a template for developing PocketMine-MP plugin in VS Code.
-version: 0.0.1
-author: Your Name
-main: author\pluginName\Main
-api: 3.x.x
+name: BehaviorPackLoader
+main: BehaviorPackLoader\BehaviorPackLoader
+version: 2.0
+api:
+- 1.0
+- 2.0.0
+- 3.0.0
+load: POSTWORLD

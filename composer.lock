@@ -4,8 +4,48 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ed62e7aa9eb63535cf9cbdc7fda99ac1",
-    "packages": [],
+    "content-hash": "501a3ffa9651faea5f967ec0049ec332",
+    "packages": [
+        {
+            "name": "knj/revelation",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/KNJ/revelation.git",
+                "reference": "05eb4ed862bee530f4f400cbd284cc8b9c00e8cf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/KNJ/revelation/zipball/05eb4ed862bee530f4f400cbd284cc8b9c00e8cf",
+                "reference": "05eb4ed862bee530f4f400cbd284cc8b9c00e8cf",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Wazly\\": "src/"
+                },
+                "files": [
+                    "src/Revelation/helper.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "KNJ",
+                    "email": "knj@wazly.net"
+                }
+            ],
+            "description": "Easiest way to make non-public methods accessible",
+            "time": "2019-01-07T10:13:36+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "pocketmine/binaryutils",
@@ -175,16 +215,6 @@
                 "source": "https://github.com/pmmp/PocketMine-MP/tree/3.3.4",
                 "issues": "https://github.com/pmmp/PocketMine-MP/issues"
             },
-            "funding": [
-                {
-                    "type": "patreon",
-                    "url": "https://www.patreon.com/pocketminemp"
-                },
-                {
-                    "type": "custom",
-                    "url": "https://github.com/pmmp/PocketMine-MP"
-                }
-            ],
             "time": "2018-12-01T10:00:38+00:00"
         },
         {
