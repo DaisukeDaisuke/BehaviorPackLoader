@@ -10,7 +10,15 @@ if(file_exists($file_phar)){
 $files = [];
 $dir = getcwd().DIRECTORY_SEPARATOR;
 
+$exclusions = ["github",".gitignore"];
+
 foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir)) as $path => $file){
+	foreach($exclusions as $exclusion){
+		if(strpos($path,$exclusion) !== false){
+			continue;
+		}
+	}
+
 	if($file->isFile() === false){
 		continue;
 	}

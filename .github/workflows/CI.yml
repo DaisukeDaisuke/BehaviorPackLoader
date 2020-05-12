@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: composer install --no-dev --prefer-dist --no-progress --no-suggest
       - name: Build source code
-        run: php -dphar.readonly=0 ./make-phar.php enableCompressAll
+        run: php -dphar.readonly=0 ./build/make-phar.php enableCompressAll
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
