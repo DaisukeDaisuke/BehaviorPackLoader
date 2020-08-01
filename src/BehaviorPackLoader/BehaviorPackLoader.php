@@ -76,17 +76,15 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 		if(!file_exists($this->getDataFolder())){
 			mkdir($this->getDataFolder(),0774,true);
 		}
+		
+		$this->saveResource("add_item_id_map.json");
 		$this->saveResource("resource_packs.yml");
 		$this->ResourcePackManager = new ResourcePackManager($this->getDataFolder(),$this->getLogger());
 		$resourcePacksConfig = new Config($this->getDataFolder() . "resource_packs.yml", Config::YAML, []);
 		$this->IsExperimentalGamePlay = (bool) $resourcePacksConfig->get("ExperimentalGamePlay");
 		//var_dump((bool) $this->IsExperimentalGamePlay);
 
-		$item_id_map = new Config($this->getDataFolder() . "add_item_id_map.json", Config::JSON, [
-			"riceball:rice" => 10000,
-			"riceball:riceball" => 10001,
-			"riceball:Grilled_riceball" => 10002,
-		]);
+		$item_id_map = new Config($this->getDataFolder() . "add_item_id_map.json", Config::JSON);
 
 		var_dump($item_id_map->getAll());
 
