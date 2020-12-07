@@ -74,7 +74,6 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 		$this->ResourcePackManager = new ResourcePackManager($this->getDataFolder(), $this->getLogger());
 		$resourcePacksConfig = new Config($this->getDataFolder()."resource_packs.yml", Config::YAML, []);
 		$this->IsExperimentalGamePlay = (bool) $resourcePacksConfig->get("ExperimentalGamePlay");
-		//var_dump((bool) $this->IsExperimentalGamePlay);
 
 		$item_id_map = new Config($this->getDataFolder()."add_item_id_map.json", Config::JSON);
 
@@ -96,19 +95,10 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 	public function addCreativeItems(){
 		foreach($this->item_id_map_array as $string_id => $id){
 			Item::addCreativeItem(Item::get($id));
-			//ItemFactory::registerItem();
 		}
 	}
 
 	public function update_item_id_map(){
-		//$reveal = reveal(StartGamePacket::class);
-
-		$itemTable = json_decode(file_get_contents($this->getServer()->getResourcePath().'/vanilla/item_id_map.json'), true);
-		//$itemTable += $this->item_id_map_array;
-		//$itemTable = $reveal->callStatic("serializeItemTable",$itemTable);
-
-		//$reveal->setStatic("itemTableCache",$itemTable);
-
 		$reveal = reveal(ItemTypeDictionary::getInstance());
 		$runtimeId = max($reveal->stringToIntMap) + 1;
 
@@ -162,7 +152,6 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 			$packet = $event->getPacket();
 			switch($packet->status){
 				case ResourcePackClientResponsePacket::STATUS_REFUSED:
-					//
 					//var_dump("REFUSED!!");
 					break;
 				case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
