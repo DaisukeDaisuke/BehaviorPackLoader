@@ -125,7 +125,7 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 		$reveal->simpleNetToCoreMapping += $simpleNetToCoreMapping;
 	}
 
-	public function omJoin(PlayerJoinEvent $event){
+	public function onJoin(PlayerJoinEvent $event){
 		$player = $event->getPlayer();
 		$this->getScheduler()->scheduleDelayedTask(new ClosureTask(function(int $currentTick = 1) use ($player): void{
 			$player->getInventory()->sendContents($player);
