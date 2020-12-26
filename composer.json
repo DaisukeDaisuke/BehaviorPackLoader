@@ -1,0 +1,22 @@
+{
+  "name": "your-name/pocketmine-vscode",
+  "license": "WTFPL",
+  "description": "Send BehaviorPack and add custom items with PocketMine-MP",
+  "authors": [
+    {
+      "name": "DaisukeDaisuke"
+    }
+  ],
+  "require": {
+    "knj/revelation": "^1.1"
+  },
+  "require-dev": {
+     "pocketmine/pocketmine-mp": "^3.0"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/pmmp/PocketMine-MP.git"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 name: BehaviorPackLoader
 main: BehaviorPackLoader\BehaviorPackLoader
-version: 5.0
+version: 5.1
 api:
 - 4.0.0
 load: POSTWORLD
-website: https://github.com/DaisukeDaisuke/BehaviorPackLoader/tree/for4.0.0
+website: https://github.com/DaisukeDaisuke/BehaviorPackLoader
