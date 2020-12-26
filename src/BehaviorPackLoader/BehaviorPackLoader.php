@@ -6,6 +6,10 @@ use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\inventory\CreativeInventory;
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIdentifier;
 use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\convert\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
@@ -23,14 +27,13 @@ use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\Config;
-use function Wazly\Revelation\reveal;
-
-
 /*
 	special Thanks!
 	https://qiita.com/KNJ/items/93eac224084da88a3882 (Japanese)
 	https://github.com/KNJ/revelation
 */
+
+use function Wazly\Revelation\reveal;
 
 class BehaviorPackLoader extends PluginBase implements Listener{
 	private const PACK_CHUNK_SIZE = 128 * 1024; //128KB
@@ -82,13 +85,13 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 
 	public function RegisterItems(){
 		foreach($this->item_id_map_array as $string_id => $id){
-			ItemFactory::getInstance()->register(new Item($id,0,"test"));
+			ItemFactory::getInstance()->register(new Item(new ItemIdentifier($id, 0), "test"));
 		}
 	}
 
 	public function addCreativeItems(){
 		foreach($this->item_id_map_array as $string_id => $id){
-			CreativeInventory::getInstance()->add(new Item($id));
+			CreativeInventory::getInstance()->add(new Item(new ItemIdentifier($id, 0)), "test");
 		}
 	}
 
@@ -137,13 +140,13 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 
 	public function send(DataPacketSendEvent $event){
 		foreach($event->getPackets() as $key => $packet){
-			if($packet instanceof ResourcePackStackPacket){//
+			if($packet instanceof ResourcePackStackPacket){
 				$stack = array_map(static function(ResourcePack $pack): ResourcePackStackEntry{
 					return new ResourcePackStackEntry($pack->getPackId(), $pack->getPackVersion(), ""); //TODO: subpacks
 				}, $this->ResourcePackManager->getResourceStack());
 
 				$packet->behaviorPackStack = $stack;
-			}else if($packet instanceof ResourcePacksInfoPacket){//
+			}else if($packet instanceof ResourcePacksInfoPacket){
 				$resourcePackEntries = array_map(static function(ResourcePack $pack): BehaviorPackInfoEntry{
 					//TODO: more stuff
 					return new BehaviorPackInfoEntry($pack->getPackId(), $pack->getPackVersion(), $pack->getPackSize(), "", "", "", false);
@@ -181,7 +184,7 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 
 						$pk = new ResourcePackDataInfoPacket();
 						$pk->packId = $pack->getPackId();
-						$pk->maxChunkSize = self::PACK_CHUNK_SIZE; //1MB
+						$pk->maxChunkSize = self::PACK_CHUNK_SIZE; //128KB
 						$pk->chunkCount = (int) ceil($pack->getPackSize() / self::PACK_CHUNK_SIZE);
 						$pk->compressedPackSize = $pack->getPackSize();
 						$pk->sha256 = $pack->getSha256();
