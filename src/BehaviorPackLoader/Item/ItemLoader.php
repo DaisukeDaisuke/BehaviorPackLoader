@@ -4,6 +4,7 @@ namespace BehaviorPackLoader\Item;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIdentifier;
 use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\convert\ItemTypeDictionary;
 use pocketmine\utils\Config;
@@ -21,7 +22,7 @@ class ItemLoader{
 
 	public static function registerItems(){
 		$factory = ItemFactory::getInstance();
-		//$factory->register(new Item(new ItemIdentifier($id, 0), "test"));
+		//$factory->register(new Item(new ItemIdentifier(10000, 0), "test"));
 	}
 
 	public static function register(array $item_id_map){
