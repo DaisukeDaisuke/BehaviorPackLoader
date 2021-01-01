@@ -17,6 +17,8 @@ use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
+use pocketmine\Server;
+
 
 class BehaviorPacksHandler implements Listener{
 	private const PACK_CHUNK_SIZE = 128 * 1024; //128KB
