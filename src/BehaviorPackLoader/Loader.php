@@ -3,7 +3,7 @@
 namespace BehaviorPackLoader;
 
 use BehaviorPackLoader\handler\BehaviorPacksHandler;
-use BehaviorPackLoader\handler\ItemLoader;
+use BehaviorPackLoader\Item\ItemLoader;
 use pocketmine\plugin\PluginBase;
 
 class Loader extends PluginBase{
