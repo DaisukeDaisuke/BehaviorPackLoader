@@ -12,3 +12,4 @@ class Loader extends PluginBase{
 		//$this->getServer()->getPluginManager()->registerEvents(new BehaviorPacksHandler($this->getDataFolder(),$this->getLogger(),false), $this);
 		ItemLoader::init($this->getDataFolder());
 	}
+}
