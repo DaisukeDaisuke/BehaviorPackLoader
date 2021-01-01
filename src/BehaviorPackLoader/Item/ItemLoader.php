@@ -32,17 +32,16 @@ class ItemLoader{
 		$simpleNetToCoreMapping = [];
 
 		$runtimeId = self::bindTo(function(){
-			return max($reveal->stringToIntMap) + 1;
+			return max($this->stringToIntMap) + 1;
 		}, ItemTypeDictionary::getInstance());
 
-		foreach($item_id_map_array as $string_id => $id){
-				$stringToIntMap[$string_id] = $runtimeId;
-				$intToStringIdMap[$runtimeId] = $string_id;
+		foreach($item_id_map as $string_id => $id){
+			$stringToIntMap[$string_id] = $runtimeId;
+			$intToStringIdMap[$runtimeId] = $string_id;
 
-				$simpleCoreToNetMapping[$id] = $runtimeId;
-				$simpleNetToCoreMapping[$runtimeId] = $id;
-				++$runtimeId;
-			}
+			$simpleCoreToNetMapping[$id] = $runtimeId;
+			$simpleNetToCoreMapping[$runtimeId] = $id;
+			++$runtimeId;
 		}
 
 		self::bindTo(function() use ($stringToIntMap, $intToStringIdMap){
@@ -57,6 +56,6 @@ class ItemLoader{
 	}
 
 	public static function bindTo(\Closure $closure, $class){
-		return $closure->bindTo($class)();
+		return $closure->bindTo($class, get_class($class))();
 	}
 }
