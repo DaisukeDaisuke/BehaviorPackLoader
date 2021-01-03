@@ -38,7 +38,7 @@ class ItemLoader{
 		$simpleNetToCoreMapping = [];
 
 		[$runtimeId, $stringToIntMap, $intToStringIdMap, $itemTypes] = self::bindTo(function(){
-			return [max($this->stringToIntMap) + 4500, $this->stringToIntMap, $this->intToStringIdMap, $this->itemTypes];
+			return [max($this->stringToIntMap) + 1, $this->stringToIntMap, $this->intToStringIdMap, $this->itemTypes];
 		}, ItemTypeDictionary::getInstance());
 
 		foreach($item_id_map as $string_id => $id){
@@ -58,9 +58,9 @@ class ItemLoader{
 		},ItemTranslator::getInstance());
 
 		self::bindTo(function() use ($itemTypes, $stringToIntMap, $intToStringIdMap){
-			$this->stringToIntMap += $stringToIntMap;
-			$this->intToStringIdMap += $intToStringIdMap;
-			$this->itemTypes += $itemTypes;
+			$this->stringToIntMap = $stringToIntMap;
+			$this->intToStringIdMap = $intToStringIdMap;
+			$this->itemTypes = $itemTypes;
 		},ItemTypeDictionary::getInstance());
 	}
 
