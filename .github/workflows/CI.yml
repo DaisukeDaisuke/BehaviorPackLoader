@@ -2,9 +2,9 @@ name: CI_for4.0.0
 
 on:
   push:
-    branches: [master,for4.0.0]
+    branches: [master,for4.0.0,for4.0.0_handler]
   pull_request:
-    branches: [master,for4.0.0]
+    branches: [master,for4.0.0,for4.0.0_handler]
 
 jobs:
   build:
