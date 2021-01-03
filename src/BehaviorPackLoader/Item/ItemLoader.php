@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace BehaviorPackLoader\Item;
 
 use pocketmine\item\Item;
@@ -32,14 +31,11 @@ class ItemLoader{
 	}
 
 	public static function register(array $item_id_map){
-		//$stringToIntMap = [];
-		//$intToStringIdMap = [];
+		$stringToIntMap = [];
+		$intToStringIdMap = [];
 
 		$simpleCoreToNetMapping = [];
 		$simpleNetToCoreMapping = [];
-
-		//$itemTypes = [];
-
 
 		[$runtimeId, $stringToIntMap, $intToStringIdMap, $itemTypes] = self::bindTo(function(){
 			return [max($this->stringToIntMap) + 4500, $this->stringToIntMap, $this->intToStringIdMap, $this->itemTypes];
@@ -51,12 +47,8 @@ class ItemLoader{
 
 			$simpleCoreToNetMapping[$id] = $runtimeId;
 			$simpleNetToCoreMapping[$runtimeId] = $id;
-
-			//var_dump("String_id: ".$string_id."\nruntimeId: ".$runtimeId."\nid: ".$id);
 	
 			$itemTypes[] = new ItemTypeEntry($string_id, $runtimeId, false);//true
-			//var_dump($itemTypes);
-			var_dump($string_id, $runtimeId, $id);
 			++$runtimeId;
 		}
 
@@ -69,7 +61,6 @@ class ItemLoader{
 			$this->stringToIntMap += $stringToIntMap;
 			$this->intToStringIdMap += $intToStringIdMap;
 			$this->itemTypes += $itemTypes;
-			var_dump($this->itemTypes[0]);
 		},ItemTypeDictionary::getInstance());
 	}
 
