@@ -1,17 +1,10 @@
 <?php
 
-namespace BehaviorPackLoader;
+namespace BehaviorPackLoader\handler;
 
 use pocketmine\event\Listener;
-use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
-use pocketmine\inventory\CreativeInventory;
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIdentifier;
-use pocketmine\network\mcpe\convert\ItemTranslator;
-use pocketmine\network\mcpe\convert\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
@@ -22,20 +15,12 @@ use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\BehaviorPackInfoEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
-use pocketmine\plugin\PluginBase;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
-use pocketmine\scheduler\ClosureTask;
-use pocketmine\utils\Config;
-/*
-	special Thanks!
-	https://qiita.com/KNJ/items/93eac224084da88a3882 (Japanese)
-	https://github.com/KNJ/revelation
-*/
+use pocketmine\Server;
 
-use function Wazly\Revelation\reveal;
 
-class BehaviorPackLoader extends PluginBase implements Listener{
+class BehaviorPacksHandler implements Listener{
 	private const PACK_CHUNK_SIZE = 128 * 1024; //128KB
 
 	/** @var ResourcePackManager */
@@ -43,99 +28,9 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 	/** @var bool */
 	public $IsExperimentalGamePlay = false;
 
-	public $item_id_map_array;
-
-	public function onEnable(){
-		$this->getServer()->getPluginManager()->registerEvents($this, $this);
-
-		$this->saveResource("setting.yml");
-		$settingConfig = new Config($this->getDataFolder()."setting.yml", Config::YAML);
-		$no_vendor = $settingConfig->get("no-vendor");
-		if(!$no_vendor&&!file_exists($this->getFile()."vendor/autoload.php")){
-			$this->getLogger()->error($this->getFile()."vendor/autoload.php ファイルに関しましては存在致しません為、BehaviorPackLoaderを起動することは出来ません。");
-			$this->getLogger()->info("§ehttps://github.com/DaisukeDaisuke/BehaviorPackLoader/releases よりphar形式のプラグインをダウンロードお願い致します。§r");
-			$this->getLogger()->info("§cこのプラグインを無効化致します。§r");
-			$this->getServer()->getPluginManager()->disablePlugin($this);
-			return;
-		}
-
-		if(!$no_vendor){
-			include_once $this->getFile()."vendor/autoload.php";
-		}
-
-		if(!file_exists($this->getDataFolder())){
-			mkdir($this->getDataFolder(), 0774, true);
-		}
-
-		$this->saveResource("add_item_id_map.json");
-		$this->saveResource("resource_packs.yml");
-		$this->ResourcePackManager = new ResourcePackManager($this->getDataFolder(), $this->getLogger());
-
-		$resourcePacksConfig = new Config($this->getDataFolder()."resource_packs.yml", Config::YAML, []);
-		$this->IsExperimentalGamePlay = (bool) $resourcePacksConfig->get("ExperimentalGamePlay");
-
-		$item_id_map = new Config($this->getDataFolder()."add_item_id_map.json", Config::JSON);
-
-		$this->item_id_map_array = $item_id_map->getAll();
-
-		$this->update_item_id_map();
-		$this->RegisterItems();
-		$this->addCreativeItems();
-	}
-
-	public function RegisterItems(){
-		foreach($this->item_id_map_array as $string_id => $id){
-			ItemFactory::getInstance()->register(new Item(new ItemIdentifier($id, 0), "test"));
-		}
-	}
-
-	public function addCreativeItems(){
-		foreach($this->item_id_map_array as $string_id => $id){
-			CreativeInventory::getInstance()->add(new Item(new ItemIdentifier($id, 0)), "test");
-		}
-	}
-
-	public function onJoin(PlayerJoinEvent $event){
-		$player = $event->getPlayer();
-		$this->getScheduler()->scheduleDelayedTask(new ClosureTask(function(int $currentTick = 1) use ($player): void{
-			$player->getNetworkSession()->getInvManager()->syncContents($player->getInventory());//...?
-			//$player->getInventory()->sendContents($player);
-		}), 1);
-
-	}
-
-	public function update_item_id_map(){
-		$reveal = reveal(ItemTypeDictionary::getInstance());
-		$runtimeId = max($reveal->stringToIntMap) + 1;
-
-		$stringToIntMap = [];
-		$intToStringIdMap = [];
-
-		$simpleCoreToNetMapping = [];
-		$simpleNetToCoreMapping = [];
-
-		$complexCoreToNetMapping = [];
-		$complexNetToCoreMapping = [];
-
-		foreach($this->item_id_map_array as $string_id => $id){
-			$stringToIntMap[$string_id] = $runtimeId;
-			$intToStringIdMap[$runtimeId] = $string_id;
-
-			$simpleCoreToNetMapping[$id] = $runtimeId;
-			$simpleNetToCoreMapping[$runtimeId] = $id;
-
-			++$runtimeId;
-		}
-
-		$reveal->stringToIntMap += $stringToIntMap;
-		$reveal->intToStringIdMap += $intToStringIdMap;
-
-		$reveal = reveal(ItemTranslator::getInstance());
-		$reveal->simpleCoreToNetMapping += $simpleCoreToNetMapping;
-		$reveal->simpleNetToCoreMapping += $simpleNetToCoreMapping;
-
-		$reveal->complexCoreToNetMapping += $complexCoreToNetMapping;
-		$reveal->complexNetToCoreMapping += $complexNetToCoreMapping;
+	public function __construct($path = null,$Logger = null,$IsExperimentalGamePlay = false){
+		$this->ResourcePackManager = new ResourcePackManager($path ?? $this->getDefaultPath(), $Logger ?? $this->getDefaultLogger());
+		$this->IsExperimentalGamePlay = $IsExperimentalGamePlay;
 	}
 
 	public function send(DataPacketSendEvent $event){
@@ -212,5 +107,13 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 			$event->getOrigin()->sendDataPacket($pk);
 			$event->cancel();
 		}
+	}
+
+	public function getDefaultLogger(){
+		return Server::getInstance()->getLogger();
+	}
+
+	public function getDefaultPath(): String{
+		return Server::getInstance()->getDataPath()."/behavior_packs/";
 	}
 }

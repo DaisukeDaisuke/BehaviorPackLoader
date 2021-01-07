@@ -4,52 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4068de535fb79ca2b62000d62df24fc7",
-    "packages": [
-        {
-            "name": "knj/revelation",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/KNJ/revelation.git",
-                "reference": "05eb4ed862bee530f4f400cbd284cc8b9c00e8cf"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/KNJ/revelation/zipball/05eb4ed862bee530f4f400cbd284cc8b9c00e8cf",
-                "reference": "05eb4ed862bee530f4f400cbd284cc8b9c00e8cf",
-                "shasum": ""
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Wazly\\": "src/"
-                },
-                "files": [
-                    "src/Revelation/helper.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "KNJ",
-                    "email": "knj@wazly.net"
-                }
-            ],
-            "description": "Easiest way to make non-public methods accessible",
-            "support": {
-                "issues": "https://github.com/KNJ/revelation/issues",
-                "source": "https://github.com/KNJ/revelation/tree/master"
-            },
-            "time": "2019-01-07T10:13:36+00:00"
-        }
-    ],
+    "content-hash": "511b265852a5bab7d1bdfa2e3131b3af",
+    "packages": [],
     "packages-dev": [
         {
             "name": "adhocore/json-comment",
@@ -401,16 +357,16 @@
         },
         {
             "name": "pocketmine/pocketmine-mp",
-            "version": "3.17.1",
+            "version": "3.17.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/PocketMine-MP.git",
-                "reference": "260c55f23a7c630a43f264d94de0b31e5327263d"
+                "reference": "5066d5225b7e3403badb8b6e52147285af7bfa3c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/PocketMine-MP/zipball/260c55f23a7c630a43f264d94de0b31e5327263d",
-                "reference": "260c55f23a7c630a43f264d94de0b31e5327263d",
+                "url": "https://api.github.com/repos/pmmp/PocketMine-MP/zipball/5066d5225b7e3403badb8b6e52147285af7bfa3c",
+                "reference": "5066d5225b7e3403badb8b6e52147285af7bfa3c",
                 "shasum": ""
             },
             "require": {
@@ -484,7 +440,7 @@
             "description": "A server software for Minecraft: Pocket Edition written in PHP",
             "homepage": "https://pmmp.io",
             "support": {
-                "source": "https://github.com/pmmp/PocketMine-MP/tree/3.17.1",
+                "source": "https://github.com/pmmp/PocketMine-MP/tree/3.17.2",
                 "issues": "https://github.com/pmmp/PocketMine-MP/issues"
             },
             "funding": [
@@ -497,7 +453,7 @@
                     "url": "https://github.com/pmmp/PocketMine-MP#donate"
                 }
             ],
-            "time": "2020-12-23T22:20:19+00:00"
+            "time": "2020-12-28T23:03:32+00:00"
         },
         {
             "name": "pocketmine/raklib",
