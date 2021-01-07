@@ -1,6 +1,6 @@
 name: BehaviorPackLoader
 main: BehaviorPackLoader\Loader
-version: 5.3
+version: 5.5
 api:
 - 4.0.0
 load: POSTWORLD
