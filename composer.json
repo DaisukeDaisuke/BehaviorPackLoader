@@ -1,11 +1,10 @@
 {
-  "name": "your-name/pocketmine-vscode",
+  "name": "daisukedaisuke/behaviorpackloader",
   "license": "WTFPL",
-  "description": "This is a template for developing PocketMine-MP plugin in VS Code.",
+  "description": "Send BehaviorPack and add custom items with PocketMine-MP.",
   "authors": [
     {
-      "name": "Your Name",
-      "email": "your@name.com"
+      "name": "DaisukeDaisuke",
     }
   ],
   "require-dev": {
