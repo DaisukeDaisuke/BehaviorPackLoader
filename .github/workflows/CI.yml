@@ -16,21 +16,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Syntax checking of php files
         run: find ./src -name "*.php" -type f | xargs -l -P 0 php -l -f
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - name: Restore cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-      - name: Composer validate
-        run: composer validate
-      - name: Install dependencies
-        run: composer install --no-dev --prefer-dist --no-progress --no-suggest
       - name: Build source code
         run: php -dphar.readonly=0 ./build/make-phar.php enableCompressAll
       - name: Upload artifact
