@@ -8,9 +8,6 @@
       "email": "your@name.com"
     }
   ],
-  "require": {
-    "knj/revelation": "^1.1"
-  },
   "require-dev": {
     "pocketmine/pocketmine-mp": "3.*"
   },
