@@ -3,7 +3,6 @@
 namespace BehaviorPackLoader;
 
 use pocketmine\event\Listener;
-use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\item\Item;
@@ -17,11 +16,11 @@ use pocketmine\network\mcpe\protocol\ResourcePackDataInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
+use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\network\mcpe\protocol\types\ResourcePackType;
 use pocketmine\plugin\PluginBase;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
-use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\Config;
 
 /*
@@ -29,7 +28,6 @@ use pocketmine\utils\Config;
 	https://qiita.com/KNJ/items/93eac224084da88a3882 (Japanese)
 	https://github.com/KNJ/revelation
 */
-use function Wazly\Revelation\reveal;
 
 class BehaviorPackLoader extends PluginBase implements Listener{
 	/** @var ResourcePackManager */
@@ -50,25 +48,6 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 	public function onEnable(){
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 
-		$this->saveResource("setting.yml");
-		$settingConfig = new Config($this->getDataFolder()."setting.yml", Config::YAML);
-		$no_vendor = $settingConfig->get("no-vendor");
-		if(!$no_vendor&&!file_exists($this->getFile()."vendor/autoload.php")){
-			$this->getLogger()->error($this->getFile()."vendor/autoload.php ファイルに関しましては存在致しません為、BehaviorPackLoaderを起動することは出来ません。");
-			$this->getLogger()->info("§ehttps://github.com/DaisukeDaisuke/BehaviorPackLoader/releases よりphar形式のプラグインをダウンロードお願い致します。§r");
-			$this->getLogger()->info("§cこのプラグインを無効化致します。§r");
-			$this->getServer()->getPluginManager()->disablePlugin($this);
-			return;
-		}
-
-		if(!$no_vendor){
-			include_once $this->getFile()."vendor/autoload.php";
-		}
-
-		if(!file_exists($this->getDataFolder())){
-			mkdir($this->getDataFolder(), 0774, true);
-		}
-
 		$this->saveResource("add_item_id_map.json");
 		$this->saveResource("resource_packs.yml");
 		$this->ResourcePackManager = new ResourcePackManager($this->getDataFolder(), $this->getLogger());
@@ -77,7 +56,7 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 
 		$item_id_map = new Config($this->getDataFolder()."add_item_id_map.json", Config::JSON);
 
-		var_dump($item_id_map->getAll());
+		//var_dump($item_id_map->getAll());
 
 		$this->item_id_map_array = $item_id_map->getAll();
 
@@ -99,14 +78,16 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 	}
 
 	public function update_item_id_map(){
-		$reveal = reveal(ItemTypeDictionary::getInstance());
-		$runtimeId = max($reveal->stringToIntMap) + 1;
-
 		$stringToIntMap = [];
 		$intToStringIdMap = [];
 
 		$simpleCoreToNetMapping = [];
 		$simpleNetToCoreMapping = [];
+
+		[$runtimeId, $stringToIntMap, $intToStringIdMap, $itemTypes] = self::bindTo(function(){
+			return [max($this->stringToIntMap) + 1, $this->stringToIntMap, $this->intToStringIdMap, $this->itemTypes];
+		}, ItemTypeDictionary::getInstance());
+
 		foreach($this->item_id_map_array as $string_id => $id){
 			$stringToIntMap[$string_id] = $runtimeId;
 			$intToStringIdMap[$runtimeId] = $string_id;
@@ -114,23 +95,20 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 			$simpleCoreToNetMapping[$id] = $runtimeId;
 			$simpleNetToCoreMapping[$runtimeId] = $id;
 
+			$itemTypes[] = new ItemTypeEntry($string_id, $runtimeId, false);//true
 			++$runtimeId;
 		}
-		$reveal->stringToIntMap += $stringToIntMap;
-		$reveal->intToStringIdMap += $intToStringIdMap;
 
+		self::bindTo(function() use ($simpleCoreToNetMapping, $simpleNetToCoreMapping){
+			$this->simpleCoreToNetMapping += $simpleCoreToNetMapping;
+			$this->simpleNetToCoreMapping += $simpleNetToCoreMapping;
+		}, ItemTranslator::getInstance());
 
-		$reveal = reveal(ItemTranslator::getInstance());
-		$reveal->simpleCoreToNetMapping += $simpleCoreToNetMapping;
-		$reveal->simpleNetToCoreMapping += $simpleNetToCoreMapping;
-	}
-
-	public function onJoin(PlayerJoinEvent $event){
-		$player = $event->getPlayer();
-		$this->getScheduler()->scheduleDelayedTask(new ClosureTask(function(int $currentTick = 1) use ($player): void{
-			$player->getInventory()->sendContents($player);
-		}), 1);
-
+		self::bindTo(function() use ($itemTypes, $stringToIntMap, $intToStringIdMap){
+			$this->stringToIntMap = $stringToIntMap;
+			$this->intToStringIdMap = $intToStringIdMap;
+			$this->itemTypes = $itemTypes;
+		}, ItemTypeDictionary::getInstance());
 	}
 
 	public function send(DataPacketSendEvent $event){
@@ -143,7 +121,7 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 		}else if($event->getPacket() instanceof StartGamePacket){
 			if(!$this->IsExperimentalGamePlay) return;
 			$packet = $event->getPacket();
-			$packet->gameRules["experimentalgameplay"] = [1, true];
+			//$packet->gameRules["experimentalgameplay"] = [1, true];
 		}
 	}
 
@@ -196,5 +174,9 @@ class BehaviorPackLoader extends PluginBase implements Listener{
 			$event->getPlayer()->dataPacket($pk);
 			$event->setCancelled();
 		}
+	}
+
+	public static function bindTo(\Closure $closure, $class){
+		return $closure->bindTo($class, get_class($class))();
 	}
 }
