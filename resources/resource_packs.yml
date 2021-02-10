@@ -2,10 +2,15 @@
 
 #「force_resources」に関しましては、pmmp本体側に存在致します、「resource_packs」に依存致します。
 # 以下の設定に関しましては、互換性の都合上存在しております...
+# Regarding "force_resources", it depends on "resource_packs" that exists on the pmmp compatible side.
+# The following settings exist for compatibility reasons.
 force_resources: false
 
 #以下の設定をオンに致しますと、 ScriptingAPIを有効化致しました状態にてログイン致します。
 #以下の設定をオンに致しますと、「試験的なゲームプレイで遊ぶ」は有効化致します為、ゲームプレイは不安定になる可能性があります。
+# If you turn on the following settings, you will be logged in with the Scripting API enabled.
+# If you turn on the following settings, "Play with experimental gameplay" will be enabled, so the gameplay may become unstable.
+# Note: Does not work with the current version
 EnableScriptingAPI: true
 
 resource_stack:
