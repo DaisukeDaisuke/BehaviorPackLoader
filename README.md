@@ -1,6 +1,6 @@
 # BehaviorPackLoader
 Send the behavior pack to the client.  
-Please note that many features of behaviorpacks require packets, so behaviorpacks sent by this plugin do not always work.
+Please note that many features of behaviorpacks require packets and experimental features, so behaviorpacks sent by this plugin do not always work.
 
 ## Special Thanks
 #### Client-side scripting support  
