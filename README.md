@@ -2,6 +2,10 @@
 Send the behavior pack to the client.  
 Please note that many features of behaviorpacks require packets and experimental features, so behaviorpacks sent by this plugin do not always work.
 
+## vs
+### refAddonsManager
+https://github.com/refteams/refAddonsManager
+
 ## Special Thanks
 #### Client-side scripting support  
 https://github.com/pmmp/PocketMine-MP/pull/2871  
