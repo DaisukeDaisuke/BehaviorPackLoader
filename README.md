@@ -3,7 +3,11 @@ Send the behavior pack to the client.
 Please note that many features of behaviorpacks require packets and experimental features, so behaviorpacks sent by this plugin do not always work.
 
 ## vs
+### BehaviorPackLoader
+api: 4.0.0  
+https://github.com/alvin0319/BehaviorPackLoader
 ### refAddonsManager
+api: 4.0.0  
 https://github.com/refteams/refAddonsManager
 
 ## Special Thanks
