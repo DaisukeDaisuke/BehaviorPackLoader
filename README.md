@@ -1,4 +1,8 @@
 # BehaviorPackLoader
+## Warning: This plugin is no longer maintained.
+## Alternative plugin  
+https://github.com/refteams/refAddonsManager
+## overview
 Send the behavior pack to the client.  
 Please note that many features of behaviorpacks require packets and experimental features, so behaviorpacks sent by this plugin do not always work.
 
