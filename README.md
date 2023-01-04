@@ -12,7 +12,13 @@ api: 4.0.0
 https://github.com/alvin0319/BehaviorPackLoader
 ### refAddonsManager
 api: 4.0.0  
-https://github.com/refteams/refAddonsManager
+https://github.com/refteams/refAddonsManager  
+### CustomItemLoader
+If a custom item needs to be added, please use the following plugin.  
+https://github.com/alvin0319/CustomItemLoader
+### Customies
+Customies provides an easy to use developer api to add customization items, blocks and entities.  
+https://github.com/CustomiesDevs/Customies  
 
 ## Special Thanks
 #### Client-side scripting support  
@@ -32,6 +38,3 @@ Target API: 4.0.0
 ### for4.0.0_BlockTest
 Target API: 4.0.0  
 for4.0.0_BlockTest branch is unstable.
-#### CustomItemLoader
-If a custom item needs to be added, please use the following plugin.  
-https://github.com/alvin0319/CustomItemLoader  
