@@ -17,7 +17,7 @@ https://github.com/refteams/refAddonsManager
 If a custom item needs to be added, please use the following plugin.  
 https://github.com/alvin0319/CustomItemLoader
 ### Customies
-Customies provides an easy to use developer api to add customization items, blocks and entities.  
+Customies provides a developer API for adding items, blocks and entities that use custom models/textures.  
 https://github.com/CustomiesDevs/Customies  
 
 ## Special Thanks
